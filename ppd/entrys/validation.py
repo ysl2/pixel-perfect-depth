@@ -17,13 +17,10 @@ def setup_trainer(cfg: DictConfig) -> Tuple[pl.Trainer, pl.LightningModule, pl.L
     # preparation
     datamodule = get_data(cfg, wo_train=True)
     model = get_model(cfg)
-    ckpt_path = find_last_ckpt_path(cfg.callbacks.model_checkpoint.dirpath)
-    if ckpt_path is None and 'ckpt_path' in cfg:
-        assert os.path.exists(cfg.ckpt_path), f"checkpoint {cfg.ckpt_path} does not exist"
-        Log.info(f"Using checkpoint {cfg.ckpt_path} for validation")
-        ckpt_path = cfg.ckpt_path
-    if ckpt_path:
-        model.load_pretrained_model(ckpt_path)
+    if cfg.pretrained_model:
+        model.load_pretrained_model_eval(cfg.pretrained_model)
+    else:
+        raise FileNotFoundError("Pretrained model not found. Please specify 'pretrained_model' path in config.")
 
     # PL callbacks and logger
     callbacks = get_callbacks(cfg)
