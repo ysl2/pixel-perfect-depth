@@ -43,7 +43,7 @@ class PixelPerfectDepth(nn.Module):
         self.sem_encoder = self.sem_encoder.to(get_device()).eval()
         self.sem_encoder.requires_grad_(False)
 
-        self.score_model = DiT()
+        self.dit = DiT()
 
     def configure_diffusion(self):
         self.schedule = LinearSchedule(T=1000)
@@ -81,7 +81,7 @@ class PixelPerfectDepth(nn.Module):
         
         for timestep in self.sampling_timesteps:
             x = torch.cat([latent, cond], dim=1)
-            pred = self.score_model(x=x, semantics=semantics, timestep=timestep)
+            pred = self.dit(x=x, semantics=semantics, timestep=timestep)
             latent = self.sampler.step(pred=pred, x_t=latent, t=timestep)
         depth = latent + 0.5
         depth = F.interpolate(depth, size=batch['image'].shape[-2:], mode='nearest')
@@ -131,7 +131,7 @@ class PixelPerfectDepth(nn.Module):
         timesteps = self.training_timesteps.sample([batch_size], device=get_device())
         latent_noised = self.schedule.forward(latent, noises, timesteps)
         x = torch.cat([latent_noised, cond], dim=1)
-        pred = self.score_model(x=x, semantics=semantics, timestep=timesteps)
+        pred = self.dit(x=x, semantics=semantics, timestep=timesteps)
 
         assert pred.shape == latent.shape == noises.shape
         latent_pred, noises_pred = self.schedule.convert_from_pred(
