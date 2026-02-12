@@ -229,3 +229,27 @@ class DepthEstimationModel(pl.LightningModule):
         if len(unexpected) > 0:
             Log.error(f"Unexpected keys: {unexpected}")
 
+    def load_pretrained_model_eval(self, ckpt_path):
+        """Load pretrained checkpoint, and assign each weight to the corresponding part."""
+        Log.info(f"Loading ckpt: {ckpt_path}")
+        state_dict = torch.load(ckpt_path, "cpu")
+        fixed_state_dict = {}
+        for k, v in state_dict.items():
+            if k.startswith("dit."):
+                fixed_state_dict[f"pipeline.{k}"] = v
+            else:
+                fixed_state_dict[k] = v
+        missing, unexpected = self.load_state_dict(fixed_state_dict, strict=False)
+        real_missing = []
+        for k in missing:
+            miss = True
+            for ig_keys in self.ignored_weights_prefix:
+                if k.startswith(ig_keys):
+                    miss = False
+            if miss:
+                real_missing.append(k)
+        if len(real_missing) > 0:
+            Log.warn(f"Missing keys: {real_missing}")
+        if len(unexpected) > 0:
+            Log.error(f"Unexpected keys: {unexpected}")
+
