@@ -9,7 +9,7 @@ import torch.nn.functional as F
 import torch.types
 import utils3d
 
-from .tools import timeit
+# from .tools import timeit
 from .geometry_numpy import solve_optimal_focal_shift, solve_optimal_shift
 
 
