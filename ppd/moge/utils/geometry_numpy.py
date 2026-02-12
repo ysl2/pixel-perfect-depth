@@ -8,7 +8,7 @@ from scipy.signal import fftconvolve
 import numpy as np
 import utils3d
 
-from .tools import timeit
+# from .tools import timeit
 
 
 def weighted_mean_numpy(x: np.ndarray, w: np.ndarray = None, axis: Union[int, Tuple[int,...]] = None, keepdims: bool = False, eps: float = 1e-7) -> np.ndarray:
