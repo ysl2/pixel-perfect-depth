@@ -32,6 +32,7 @@ its estimated depth maps can produce high-quality, flying-pixel-free point cloud
 * Although our model is trained at a fixed resolution of 1024×768, it can flexibly support various input resolutions and aspect ratios during inference.
 
 ## News
+- **2026-02-12:** We release the evaluation code for 5 benchmarks.
 - **2026-01-09:** We release the PPVD model together with its weights.
 - **2025-12-20:** We release the training code for PPD, featuring a two-stage pipeline: 512×512 pre-training followed by 1024×768 fine-tuning.
 - **2025-12-01:** We release a new PPD model together with its weights, which leverage MoGe2 to provide semantics and deliver a 20–30% improvement on zero-shot benchmarks.
@@ -96,6 +97,14 @@ Our training strategy follows a two-stage curriculum:
     ```bash
     python main.py --cfg_file ppd/configs/train_finetune.yaml pl_trainer.devices=8
     ```
+
+### Evaluation
+
+Before running the evaluation, please first modify the data_root field in ppd/configs/eval.yaml to point to your local evaluation dataset path.
+
+```bash
+bash eval.sh
+```
 
 ## Qualitative Comparisons with Previous Methods
 
